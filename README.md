@@ -12,7 +12,7 @@ An Android learning app for developers to track their Android/Kotlin journey.
 ## Features
 - [ ] Login / Signup UI
 - [ ] Navigation setup
-- [ ] ViewModel + Flow (next module)
+- [ ] ViewModel + Flow 
 
 ## Setup
 1. Clone the repo
