@@ -61,4 +61,5 @@ dependencies {
     // Add this line ONLY if you are building an Android App
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
 }

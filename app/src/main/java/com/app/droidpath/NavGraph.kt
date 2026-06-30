@@ -5,8 +5,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.app.droidpath.auth.LoginScreen
-import com.app.droidpath.auth.SignUpScreen
+import com.app.droidpath.auth.login.LoginScreen
+import com.app.droidpath.auth.signup.SignUpScreen
 
 object Routes {
     const val LOGIN = "Login"
@@ -18,7 +18,7 @@ fun AppNavGraph(navController: NavHostController = rememberNavController()) {
     NavHost(navController = navController, startDestination = Routes.LOGIN) {
 
         composable(Routes.LOGIN) {
-            LoginScreen(onSignInClick = { email, password ->
+            LoginScreen(onSignInSuccess = {
             }, onCreateAccountClick = {
                 navController.navigate(Routes.SIGNUP)
             })

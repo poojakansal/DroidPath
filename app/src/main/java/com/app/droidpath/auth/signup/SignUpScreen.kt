@@ -1,4 +1,4 @@
-package com.app.droidpath.auth
+package com.app.droidpath.auth.signup
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
@@ -30,6 +31,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,7 +57,16 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.droidpath.R
+import com.app.droidpath.auth.DroidPathTextField
+import com.app.droidpath.auth.FieldLabel
+import com.app.droidpath.auth.GradientButton
+import com.app.droidpath.auth.InlineError
+import com.app.droidpath.auth.LogoHeader
+import com.app.droidpath.auth.login.LoginUiEvent
+import com.app.droidpath.auth.login.LoginViewModel
 import com.app.droidpath.ui.theme.BgDeep
 import com.app.droidpath.ui.theme.CardBg
 import com.app.droidpath.ui.theme.CardStroke
@@ -68,39 +79,25 @@ import com.app.droidpath.utils.ValidationUtils
 
 @Composable
 fun SignUpScreen(
+    viewModel: SignUpViewModel = viewModel(),
     onCreateAccountClick: (name: String, email: String, password: String) -> Unit = { _, _, _ -> },
     onSignInClick: () -> Unit = {}
 ) {
-    var name by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var passwordVisible by remember { mutableStateOf(false) }
-    var submitted by remember { mutableStateOf(false) }
 
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
 
-    // Live errors — null until first submission attempt
-    val liveNameError = if (submitted) ValidationUtils.validateName(name) else null
-    val liveEmailError = if (submitted) ValidationUtils.validateEmail(email) else null
-    val livePasswordError = if (submitted) ValidationUtils.validatePassword(password) else null
-
-    val isFormValid = liveNameError == null && liveEmailError == null
-            && livePasswordError == null
-            && name.isNotBlank() && email.isNotBlank() && password.isNotBlank()
-
+    LaunchedEffect(Unit) {
+        viewModel.uiEvent.collect { event->
+            when(event){
+                is SignUpUiEvent.showToast -> Toast.makeText(context,event.message, Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
     fun attemptSignUp() {
         focusManager.clearFocus()
-        submitted = true
-        val nErr = ValidationUtils.validateName(name)
-        val eErr = ValidationUtils.validateEmail(email)
-        val pErr = ValidationUtils.validatePassword(password)
-        if (nErr == null && eErr == null && pErr == null) {
-            Toast.makeText(context, "Creating your account...", Toast.LENGTH_SHORT).show()
-            onCreateAccountClick(name, email, password)
-        } else {
-            Toast.makeText(context, "Please fix the errors above", Toast.LENGTH_SHORT).show()
-        }
+        viewModel.onSignupSubmitted()
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -167,19 +164,19 @@ fun SignUpScreen(
                     FieldLabel(text = "NAME")
                     Spacer(Modifier.height(6.dp))
                     DroidPathTextField(
-                        value = name,
-                        onValueChange = { name = it },
+                        value = state.name,
+                        onValueChange = viewModel::onNameChange,
                         placeholder = "Pooja",
-                        isError = liveNameError != null,
+                        isError = state.nameError != null,
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Default.Person,
                                 contentDescription = null,
-                                tint = if (liveNameError != null) ErrorRed else IconTint,
+                                tint = if (state.nameError != null) ErrorRed else IconTint,
                                 modifier = Modifier.size(18.dp)
                             )
                         },
-                        keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                        keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Text,
                             imeAction = ImeAction.Next
                         ),
@@ -187,7 +184,7 @@ fun SignUpScreen(
                             onNext = { focusManager.moveFocus(FocusDirection.Down) }
                         )
                     )
-                    InlineError(message = liveNameError)
+                    InlineError(message = state.nameError)
 
                     Spacer(Modifier.height(14.dp))
 
@@ -195,19 +192,19 @@ fun SignUpScreen(
                     FieldLabel(text = "EMAIL")
                     Spacer(Modifier.height(6.dp))
                     DroidPathTextField(
-                        value = email,
-                        onValueChange = { email = it },
+                        value = state.email,
+                        onValueChange = viewModel::onEmailChange,
                         placeholder = "you@droidpath.dev",
-                        isError = liveEmailError != null,
+                        isError = state.emailError != null,
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Default.Email,
                                 contentDescription = null,
-                                tint = if (liveEmailError != null) ErrorRed else IconTint,
+                                tint = if (state.emailError != null) ErrorRed else IconTint,
                                 modifier = Modifier.size(18.dp)
                             )
                         },
-                        keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                        keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Email,
                             imeAction = ImeAction.Next
                         ),
@@ -215,7 +212,7 @@ fun SignUpScreen(
                             onNext = { focusManager.moveFocus(FocusDirection.Down) }
                         )
                     )
-                    InlineError(message = liveEmailError)
+                    InlineError(message = state.emailError)
 
                     Spacer(Modifier.height(14.dp))
 
@@ -223,32 +220,32 @@ fun SignUpScreen(
                     FieldLabel(text = "PASSWORD")
                     Spacer(Modifier.height(6.dp))
                     DroidPathTextField(
-                        value = password,
-                        onValueChange = { password = it },
+                        value = state.password,
+                        onValueChange = viewModel::onPasswordChange,
                         placeholder = "6+ characters",
-                        isError = livePasswordError != null,
+                        isError = state.passwordError != null,
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Default.Password,
                                 contentDescription = null,
-                                tint = if (livePasswordError != null) ErrorRed else IconTint,
+                                tint = if (state.passwordError != null) ErrorRed else IconTint,
                                 modifier = Modifier.size(18.dp)
                             )
                         },
                         trailingIcon = {
-                            IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                            IconButton(onClick = viewModel::onTogglePasswordVisibility) {
                                 Icon(
-                                    imageVector = if (passwordVisible) Icons.Default.VisibilityOff
+                                    imageVector = if (state.passwordVisible) Icons.Default.VisibilityOff
                                     else Icons.Default.Visibility,
-                                    contentDescription = if (passwordVisible) "Hide" else "Show",
+                                    contentDescription = if (state.passwordVisible) "Hide" else "Show",
                                     tint = IconTint,
                                     modifier = Modifier.size(18.dp)
                                 )
                             }
                         },
-                        visualTransformation = if (passwordVisible) VisualTransformation.None
+                        visualTransformation = if (state.passwordVisible) VisualTransformation.None
                         else PasswordVisualTransformation(),
-                        keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                        keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Password,
                             imeAction = ImeAction.Done
                         ),
@@ -256,7 +253,7 @@ fun SignUpScreen(
                             onDone = { attemptSignUp() }
                         )
                     )
-                    InlineError(message = livePasswordError)
+                    InlineError(message = state.passwordError)
 
                     Spacer(Modifier.height(24.dp))
 
@@ -264,8 +261,8 @@ fun SignUpScreen(
                     GradientButton(
                         text = "Create account  →",
                         onClick = { attemptSignUp() },
-                        isFormValid = isFormValid,
-                        submitted = submitted
+                        isFormValid = state.isFormValid,
+                        submitted = state.submitted
                     )
 
                     Spacer(Modifier.height(20.dp))

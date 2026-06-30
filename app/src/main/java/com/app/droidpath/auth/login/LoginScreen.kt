@@ -1,4 +1,4 @@
-package com.app.droidpath.auth
+package com.app.droidpath.auth.login
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Password
@@ -27,10 +28,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
@@ -52,7 +51,14 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.droidpath.R
+import com.app.droidpath.auth.DroidPathTextField
+import com.app.droidpath.auth.FieldLabel
+import com.app.droidpath.auth.GradientButton
+import com.app.droidpath.auth.InlineError
+import com.app.droidpath.auth.LogoHeader
 import com.app.droidpath.ui.theme.BgDeep
 import com.app.droidpath.ui.theme.CardBg
 import com.app.droidpath.ui.theme.CardStroke
@@ -61,38 +67,30 @@ import com.app.droidpath.ui.theme.IconTint
 import com.app.droidpath.ui.theme.TextCode
 import com.app.droidpath.ui.theme.TextPrimary
 import com.app.droidpath.ui.theme.TextSecondary
-import com.app.droidpath.utils.ValidationUtils
 
 @Composable
 fun LoginScreen(
-    onSignInClick: (email: String, password: String) -> Unit = { _, _ -> },
+    viewModel: LoginViewModel = viewModel(),
+    onSignInSuccess: () -> Unit = {},
     onCreateAccountClick: () -> Unit = {}
 ) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var passwordVisible by remember { mutableStateOf(false) }
-    var submitted by remember { mutableStateOf(false) }
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
 
-    val liveEmailError = if (submitted) ValidationUtils.validateEmail(email) else null
-    val livePasswordError = if (submitted) ValidationUtils.validatePassword(password) else null
 
-    val isFormValid = liveEmailError == null && livePasswordError == null
-            && email.isNotBlank() && password.isNotBlank()
+    LaunchedEffect(Unit) {
+        viewModel.uiEvent.collect {event->
+            when(event){
+                is LoginUiEvent.ShowToast -> Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 
     fun attemptSignIn() {
         focusManager.clearFocus()
-        submitted = true
-        val eErr = ValidationUtils.validateEmail(email)
-        val pErr = ValidationUtils.validatePassword(password)
-        if (eErr == null && pErr == null) {
-            Toast.makeText(context, "Signing in...", Toast.LENGTH_SHORT).show()
-            onSignInClick(email, password)
-        } else {
-            Toast.makeText(context, "Please fix the errors above", Toast.LENGTH_SHORT).show()
-        }
+        viewModel.onSignInClick()
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -156,19 +154,19 @@ fun LoginScreen(
                     FieldLabel(text = "EMAIL")
                     Spacer(Modifier.height(6.dp))
                     DroidPathTextField(
-                        value = email,
-                        onValueChange = { email = it },
+                        value = state.email,
+                        onValueChange = viewModel::onEmailChange,
                         placeholder = "you@droidpath.dev",
-                        isError = liveEmailError != null,
+                        isError = state.emailError != null,
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Default.Email,
                                 contentDescription = null,
-                                tint = if (liveEmailError != null) ErrorRed else IconTint,
+                                tint = if (state.emailError != null) ErrorRed else IconTint,
                                 modifier = Modifier.size(18.dp)
                             )
                         },
-                        keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                        keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Email,
                             imeAction = ImeAction.Next
                         ),
@@ -176,7 +174,7 @@ fun LoginScreen(
                             onNext = { focusManager.moveFocus(FocusDirection.Down) }
                         )
                     )
-                    InlineError(message = liveEmailError)
+                    InlineError(message = state.emailError)
 
                     Spacer(Modifier.height(14.dp))
 
@@ -184,32 +182,32 @@ fun LoginScreen(
                     FieldLabel(text = "PASSWORD")
                     Spacer(Modifier.height(6.dp))
                     DroidPathTextField(
-                        value = password,
-                        onValueChange = { password = it },
+                        value = state.password,
+                        onValueChange = viewModel::onPasswordChange,
                         placeholder = "••••••••",
-                        isError = livePasswordError != null,
+                        isError = state.passwordError != null,
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Default.Password,
                                 contentDescription = null,
-                                tint = if (livePasswordError != null) ErrorRed else IconTint,
+                                tint = if (state.passwordError != null) ErrorRed else IconTint,
                                 modifier = Modifier.size(18.dp)
                             )
                         },
                         trailingIcon = {
-                            IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                            IconButton(onClick = viewModel::onTogglePasswordVisibility) {
                                 Icon(
-                                    imageVector = if (passwordVisible) Icons.Default.VisibilityOff
+                                    imageVector = if (state.passwordVisible) Icons.Default.VisibilityOff
                                     else Icons.Default.Visibility,
-                                    contentDescription = if (passwordVisible) "Hide" else "Show",
+                                    contentDescription = if (state.passwordVisible) "Hide" else "Show",
                                     tint = IconTint,
                                     modifier = Modifier.size(18.dp)
                                 )
                             }
                         },
-                        visualTransformation = if (passwordVisible) VisualTransformation.None
+                        visualTransformation = if (state.passwordVisible) VisualTransformation.None
                         else PasswordVisualTransformation(),
-                        keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                        keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Password,
                             imeAction = ImeAction.Done
                         ),
@@ -217,7 +215,7 @@ fun LoginScreen(
                             onDone = { attemptSignIn() }
                         )
                     )
-                    InlineError(message = livePasswordError)
+                    InlineError(message = state.passwordError)
 
                     Spacer(Modifier.height(24.dp))
 
@@ -225,8 +223,8 @@ fun LoginScreen(
                     GradientButton(
                         text = "Sign in  →",
                         onClick = { attemptSignIn() },
-                        isFormValid = isFormValid,
-                        submitted = submitted
+                        isFormValid = state.isFormValid,
+                        submitted = state.submitted
                     )
 
                     Spacer(Modifier.height(20.dp))
