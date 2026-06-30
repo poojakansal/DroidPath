@@ -79,14 +79,14 @@ class SignUpViewModel : ViewModel() {
         performSignUp()
     }
 
-    fun performSignUp() {
+    private fun performSignUp() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
 
             delay(1000)
 
             _uiState.update { it.copy(isLoading = false) }
-            _uiEvent.emit(SignUpUiEvent.showToast("Signed in successfully!"))
+            _uiEvent.emit(SignUpUiEvent.showToast("Account created successfully!"))
         }
     }
 
