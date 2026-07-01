@@ -1,4 +1,4 @@
-package com.app.droidpath.auth.login
+package com.app.droidpath.presentation.auth.login
 
 data class LoginUiState(
     val email: String = "",

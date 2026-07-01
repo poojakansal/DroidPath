@@ -1,4 +1,4 @@
-package com.app.droidpath.auth.login
+package com.app.droidpath.presentation.auth.login
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -54,11 +54,11 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.droidpath.R
-import com.app.droidpath.auth.DroidPathTextField
-import com.app.droidpath.auth.FieldLabel
-import com.app.droidpath.auth.GradientButton
-import com.app.droidpath.auth.InlineError
-import com.app.droidpath.auth.LogoHeader
+import com.app.droidpath.presentation.auth.DroidPathTextField
+import com.app.droidpath.presentation.auth.FieldLabel
+import com.app.droidpath.presentation.auth.GradientButton
+import com.app.droidpath.presentation.auth.InlineError
+import com.app.droidpath.presentation.auth.LogoHeader
 import com.app.droidpath.ui.theme.BgDeep
 import com.app.droidpath.ui.theme.CardBg
 import com.app.droidpath.ui.theme.CardStroke

@@ -1,4 +1,4 @@
-package com.app.droidpath.auth.signup
+package com.app.droidpath.presentation.auth.signup
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -73,7 +73,7 @@ class SignUpViewModel : ViewModel() {
             )
         }
         if (nameError != null || emailError != null || passwordError != null) {
-            viewModelScope.launch { _uiEvent.emit(SignUpUiEvent.showToast("Please fix the errors above")) }
+            viewModelScope.launch { _uiEvent.emit(SignUpUiEvent.ShowToast("Please fix the errors above")) }
             return
         }
         performSignUp()
@@ -86,7 +86,7 @@ class SignUpViewModel : ViewModel() {
             delay(1000)
 
             _uiState.update { it.copy(isLoading = false) }
-            _uiEvent.emit(SignUpUiEvent.showToast("Account created successfully!"))
+            _uiEvent.emit(SignUpUiEvent.ShowToast("Account created successfully!"))
         }
     }
 

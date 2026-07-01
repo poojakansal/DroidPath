@@ -1,4 +1,4 @@
-package com.app.droidpath.auth.login
+package com.app.droidpath.presentation.auth.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

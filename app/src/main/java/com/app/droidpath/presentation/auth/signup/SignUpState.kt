@@ -1,4 +1,4 @@
-package com.app.droidpath.auth.signup
+package com.app.droidpath.presentation.auth.signup
 
 data class SignUpState(
     val name: String = "",

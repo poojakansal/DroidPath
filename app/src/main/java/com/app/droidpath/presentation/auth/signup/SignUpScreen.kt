@@ -1,4 +1,4 @@
-package com.app.droidpath.auth.signup
+package com.app.droidpath.presentation.auth.signup
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -33,9 +33,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
@@ -60,13 +57,11 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.droidpath.R
-import com.app.droidpath.auth.DroidPathTextField
-import com.app.droidpath.auth.FieldLabel
-import com.app.droidpath.auth.GradientButton
-import com.app.droidpath.auth.InlineError
-import com.app.droidpath.auth.LogoHeader
-import com.app.droidpath.auth.login.LoginUiEvent
-import com.app.droidpath.auth.login.LoginViewModel
+import com.app.droidpath.presentation.auth.DroidPathTextField
+import com.app.droidpath.presentation.auth.FieldLabel
+import com.app.droidpath.presentation.auth.GradientButton
+import com.app.droidpath.presentation.auth.InlineError
+import com.app.droidpath.presentation.auth.LogoHeader
 import com.app.droidpath.ui.theme.BgDeep
 import com.app.droidpath.ui.theme.CardBg
 import com.app.droidpath.ui.theme.CardStroke
@@ -75,7 +70,6 @@ import com.app.droidpath.ui.theme.IconTint
 import com.app.droidpath.ui.theme.TextCode
 import com.app.droidpath.ui.theme.TextPrimary
 import com.app.droidpath.ui.theme.TextSecondary
-import com.app.droidpath.utils.ValidationUtils
 
 @Composable
 fun SignUpScreen(
@@ -91,7 +85,7 @@ fun SignUpScreen(
     LaunchedEffect(Unit) {
         viewModel.uiEvent.collect { event->
             when(event){
-                is SignUpUiEvent.showToast -> Toast.makeText(context,event.message, Toast.LENGTH_SHORT).show()
+                is SignUpUiEvent.ShowToast -> Toast.makeText(context,event.message, Toast.LENGTH_SHORT).show()
             }
         }
     }

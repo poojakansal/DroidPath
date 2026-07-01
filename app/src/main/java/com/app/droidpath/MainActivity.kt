@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import com.app.droidpath.presentation.navigation.AppNavGraph
 import com.app.droidpath.ui.theme.droidpathTheme
 
 class MainActivity : ComponentActivity() {

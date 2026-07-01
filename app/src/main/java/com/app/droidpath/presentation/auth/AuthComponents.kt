@@ -1,4 +1,4 @@
-package com.app.droidpath.auth
+package com.app.droidpath.presentation.auth
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
