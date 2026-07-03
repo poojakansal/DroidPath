@@ -160,7 +160,7 @@ fun SignUpScreen(
                     DroidPathTextField(
                         value = state.name,
                         onValueChange = viewModel::onNameChange,
-                        placeholder = "Pooja",
+                        placeholder = "Learner",
                         isError = state.nameError != null,
                         leadingIcon = {
                             Icon(
