@@ -15,7 +15,7 @@ class AppViewModel @Inject constructor(private val authRepository: AuthRepositor
 
     val isLoggedIn: StateFlow<Boolean?> = authRepository.isLoggedIn().stateIn(
         scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
+        started = SharingStarted.Eagerly,
         initialValue = null
     )
 }

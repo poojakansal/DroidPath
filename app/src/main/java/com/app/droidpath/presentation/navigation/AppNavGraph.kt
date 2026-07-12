@@ -26,7 +26,6 @@ fun AppNavGraph(navController: NavHostController = rememberNavController()) {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()
         }
-        return
     }
 
     NavHost(
