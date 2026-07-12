@@ -57,11 +57,11 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.droidpath.R
-import com.app.droidpath.presentation.auth.DroidPathTextField
 import com.app.droidpath.presentation.auth.FieldLabel
-import com.app.droidpath.presentation.auth.GradientButton
 import com.app.droidpath.presentation.auth.InlineError
 import com.app.droidpath.presentation.auth.LogoHeader
+import com.app.droidpath.presentation.commonComponents.CustomTextField
+import com.app.droidpath.presentation.commonComponents.CustomGradientButton
 import com.app.droidpath.ui.theme.BgDeep
 import com.app.droidpath.ui.theme.CardBg
 import com.app.droidpath.ui.theme.CardStroke
@@ -83,9 +83,13 @@ fun SignUpScreen(
     val focusManager = LocalFocusManager.current
 
     LaunchedEffect(Unit) {
-        viewModel.uiEvent.collect { event->
-            when(event){
-                is SignUpUiEvent.ShowToast -> Toast.makeText(context,event.message, Toast.LENGTH_SHORT).show()
+        viewModel.uiEvent.collect { event ->
+            when (event) {
+                is SignUpUiEvent.ShowToast -> Toast.makeText(
+                    context,
+                    event.message,
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
@@ -157,7 +161,7 @@ fun SignUpScreen(
                     // ── NAME ──────────────────────────────────────────────
                     FieldLabel(text = "NAME")
                     Spacer(Modifier.height(6.dp))
-                    DroidPathTextField(
+                    CustomTextField(
                         value = state.name,
                         onValueChange = viewModel::onNameChange,
                         placeholder = "Learner",
@@ -185,7 +189,7 @@ fun SignUpScreen(
                     // ── EMAIL ─────────────────────────────────────────────
                     FieldLabel(text = "EMAIL")
                     Spacer(Modifier.height(6.dp))
-                    DroidPathTextField(
+                    CustomTextField(
                         value = state.email,
                         onValueChange = viewModel::onEmailChange,
                         placeholder = "you@droidpath.dev",
@@ -213,7 +217,7 @@ fun SignUpScreen(
                     // ── PASSWORD ──────────────────────────────────────────
                     FieldLabel(text = "PASSWORD")
                     Spacer(Modifier.height(6.dp))
-                    DroidPathTextField(
+                    CustomTextField(
                         value = state.password,
                         onValueChange = viewModel::onPasswordChange,
                         placeholder = "6+ characters",
@@ -252,7 +256,7 @@ fun SignUpScreen(
                     Spacer(Modifier.height(24.dp))
 
                     // ── Create account button ─────────────────────────────
-                    GradientButton(
+                    CustomGradientButton(
                         text = "Create account  →",
                         onClick = { attemptSignUp() },
                         isFormValid = state.isFormValid,

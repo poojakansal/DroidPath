@@ -51,14 +51,15 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.droidpath.R
-import com.app.droidpath.presentation.auth.DroidPathTextField
 import com.app.droidpath.presentation.auth.FieldLabel
-import com.app.droidpath.presentation.auth.GradientButton
 import com.app.droidpath.presentation.auth.InlineError
 import com.app.droidpath.presentation.auth.LogoHeader
+import com.app.droidpath.presentation.commonComponents.CustomTextField
+import com.app.droidpath.presentation.commonComponents.CustomGradientButton
 import com.app.droidpath.ui.theme.BgDeep
 import com.app.droidpath.ui.theme.CardBg
 import com.app.droidpath.ui.theme.CardStroke
@@ -70,7 +71,7 @@ import com.app.droidpath.ui.theme.TextSecondary
 
 @Composable
 fun LoginScreen(
-    viewModel: LoginViewModel = viewModel(),
+    viewModel: LoginViewModel = hiltViewModel(),
     onSignInSuccess: () -> Unit = {},
     onCreateAccountClick: () -> Unit = {}
 ) {
@@ -84,6 +85,7 @@ fun LoginScreen(
         viewModel.uiEvent.collect {event->
             when(event){
                 is LoginUiEvent.ShowToast -> Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
+                is LoginUiEvent.NavigateToDashboard -> onSignInSuccess()
             }
         }
     }
@@ -153,7 +155,7 @@ fun LoginScreen(
                     // ── EMAIL ─────────────────────────────────────────────
                     FieldLabel(text = "EMAIL")
                     Spacer(Modifier.height(6.dp))
-                    DroidPathTextField(
+                    CustomTextField(
                         value = state.email,
                         onValueChange = viewModel::onEmailChange,
                         placeholder = "you@droidpath.dev",
@@ -181,7 +183,7 @@ fun LoginScreen(
                     // ── PASSWORD ──────────────────────────────────────────
                     FieldLabel(text = "PASSWORD")
                     Spacer(Modifier.height(6.dp))
-                    DroidPathTextField(
+                    CustomTextField(
                         value = state.password,
                         onValueChange = viewModel::onPasswordChange,
                         placeholder = "••••••••",
@@ -220,7 +222,7 @@ fun LoginScreen(
                     Spacer(Modifier.height(24.dp))
 
                     // ── Sign In button ────────────────────────────────────
-                    GradientButton(
+                    CustomGradientButton(
                         text = "Sign in  →",
                         onClick = { attemptSignIn() },
                         isFormValid = state.isFormValid,

@@ -22,35 +22,30 @@ class SignUpViewModel : ViewModel() {
     val uiEvent: SharedFlow<SignUpUiEvent> = _uiEvent.asSharedFlow()
 
     fun onNameChange(value: String) {
-        viewModelScope.launch {
-            _uiState.update {
-                it.copy(
-                    name = value,
-                    nameError = if (it.submitted) ValidationUtils.validateName(value) else null
-                )
-            }
+        _uiState.update {
+            it.copy(
+                name = value,
+                nameError = if (it.submitted) ValidationUtils.validateName(value) else null
+            )
         }
     }
 
     fun onEmailChange(value: String) {
-        viewModelScope.launch {
-            _uiState.update {
-                it.copy(
-                    email = value,
-                    emailError = if (it.submitted) ValidationUtils.validateEmail(value) else null
-                )
-            }
+        _uiState.update {
+            it.copy(
+                email = value,
+                emailError = if (it.submitted) ValidationUtils.validateEmail(value) else null
+            )
         }
+
     }
 
     fun onPasswordChange(value: String) {
-        viewModelScope.launch {
-            _uiState.update {
-                it.copy(
-                    password = value,
-                    passwordError = if (it.submitted) ValidationUtils.validatePassword(value) else null
-                )
-            }
+        _uiState.update {
+            it.copy(
+                password = value,
+                passwordError = if (it.submitted) ValidationUtils.validatePassword(value) else null
+            )
         }
     }
 
